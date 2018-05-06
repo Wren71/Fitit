@@ -330,10 +330,10 @@ GoogleMap.OnMapLongClickListener {
     }
 
 
-    //deletes routes if user has a long click
+    //creates new routes if user has a long click
     @Override
     public void onMapLongClick(LatLng latLng) {
-        mMap.clear();
+       // mMap.clear();
         arrayPoints.clear();
 
 

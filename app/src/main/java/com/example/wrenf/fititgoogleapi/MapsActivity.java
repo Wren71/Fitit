@@ -32,6 +32,7 @@ import com.google.android.gms.maps.model.SquareCap;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import java.util.ArraysList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -42,7 +43,8 @@ import java.util.List;
 
 public class MapsActivity extends AppCompatActivity
         implements OnMapReadyCallback, GoogleMap.OnPolylineClickListener,
-        GoogleMap.OnPolygonClickListener {
+        GoogleMap.OnPolygonClickListener, GoogleMap.OnMapClickListener,
+GoogleMap.OnMapLongClickListener {
 
     private static final String TAG = MapsActivity.class.getSimpleName();
     private GoogleMap mMap;
@@ -95,7 +97,9 @@ public class MapsActivity extends AppCompatActivity
     private static final List<PatternItem> PATTERN_POLYGON_BETA =
             Arrays.asList(DOT, GAP, DASH, GAP);
 
-
+    // Creates routes from user. 
+    private PolylineOptions polylineOptions;
+    private ArrayList<LatLng> arrayPoints;
 
 
 
@@ -155,8 +159,16 @@ public class MapsActivity extends AppCompatActivity
         polyline1.setTag("Relaxed Run");
         stylePolyline(polyline1);
 
+            
+       
+        // see the methods below for descriptions of the method use.
+        mMap.setOnMapClickListener(this);
+        mMap.setOnMapLongClickListener(this);
 
+        this.init();
 
+     
+       
 
 
 
@@ -297,6 +309,53 @@ public class MapsActivity extends AppCompatActivity
 
 
 
+
+ 
+    //adds marker with each short click and adds a polyline between each marker. This allows the user to create their own running routes. 
+    @Override
+    public void onMapClick(LatLng latLng) {
+        //add marker
+        MarkerOptions marker = new MarkerOptions();
+        marker.position(latLng);
+        mMap.addMarker(marker);
+
+
+        polylineOptions = new PolylineOptions();
+        polylineOptions.color(Color.RED);
+        polylineOptions.width(5);
+        arrayPoints.add(latLng);
+        polylineOptions.addAll(arrayPoints);
+        mMap.addPolyline(polylineOptions);
+
+    }
+
+
+    //deletes routes if user has a long click
+    @Override
+    public void onMapLongClick(LatLng latLng) {
+        mMap.clear();
+        arrayPoints.clear();
+
+
+    }
+
+    
+    // sets array points of coordinates of user clicks. 
+    private void init() {
+
+        String coordinates[] = { "37.517180", "127.041268" };
+        double lat = Double.parseDouble(coordinates[0]);
+        double lng = Double.parseDouble(coordinates[1]);
+
+        LatLng position = new LatLng(lat, lng);
+        //GooglePlayServicesUtil.isGooglePlayServicesAvailable(
+          //      MapsActivity.this);
+
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
+
+        arrayPoints = new ArrayList<LatLng>();
+    }
 
 
 
